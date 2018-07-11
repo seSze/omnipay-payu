@@ -6,6 +6,7 @@ use Omnipay\Common\Message\ResponseInterface;
 use Omnipay\Migs\Message\AbstractRequest;
 use Omnipay\PayU\Endpoint;
 use Omnipay\PayU\HasCredentials;
+
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
@@ -25,7 +26,7 @@ class CompletePurchaseRequest extends AbstractRequest
      */
     public function getData()
     {
-        $this->validate('transactionReference');
+        $this->validate('orderId');
 
         return [];
     }
@@ -53,13 +54,21 @@ class CompletePurchaseRequest extends AbstractRequest
     }
 
     /**
-     * @param string $transactionReference
+     * @param string $orderId
      *
      * @return \Omnipay\Common\Message\AbstractRequest
      */
-    public function setTransactionReference($transactionReference)
+    public function setOrderId($orderId)
     {
-        return $this->setParameter('transactionReference', $transactionReference);
+        return $this->setParameter('orderId', $orderId);
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderId(): string
+    {
+        return $this->getParameter('orderId');
     }
 
     /**
