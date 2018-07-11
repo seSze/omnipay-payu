@@ -40,4 +40,28 @@ class CompletePurchaseResponse extends AbstractResponse
 
         return array_pop($data)['value'] ?? '';
     }
+
+    /**
+     * @return mixed|string
+     */
+    public function getExtOrderId()
+    {
+        return $this->getOrder()['extOrderId'] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPayMethodType()
+    {
+        return $this->getOrder()['payMethod']['type'] ?? '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
 }
