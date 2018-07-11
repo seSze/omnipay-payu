@@ -13,7 +13,7 @@ to your `composer.json` file:
 ```json
 {
     "require": {
-        "lari/omnipay-payu": "~2.0"
+        "lari/omnipay-payu-com": "~2.0"
     }
 }
 ```

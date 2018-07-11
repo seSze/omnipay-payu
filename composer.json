@@ -1,5 +1,5 @@
 {
-    "name": "omnipay/payu-com",
+    "name": "lari/omnipay-payu-com",
     "description": "PayUGateway for Omnipay",
     "keywords": [
         "gateway",
