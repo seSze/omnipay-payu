@@ -76,6 +76,6 @@ class CompletePurchaseRequest extends AbstractRequest
      */
     public function getEndpoint()
     {
-        return (new Endpoint())->get($this->getTestMode()).$this->getParameter('transactionReference');
+        return (new Endpoint())->get($this->getTestMode()).$this->getOrderId();
     }
 }
