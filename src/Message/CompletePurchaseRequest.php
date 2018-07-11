@@ -15,8 +15,6 @@ class CompletePurchaseRequest extends AbstractRequest
 {
     use HasCredentials;
 
-    // VJ61R1R8N2180711GUEST000P01
-
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.

@@ -42,7 +42,7 @@ class CompletePurchaseResponse extends AbstractResponse
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getExtOrderId()
     {
