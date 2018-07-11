@@ -43,10 +43,12 @@ class PurchaseRequest extends AbstractRequest
             'description'   => $this->getDescription(),
             'currencyCode'  => $this->getCurrency(),
             'products'      => $items,
-//            'buyer'         => $this->getBuyer(),
             'merchantPosId' => $this->getMerchantId(),
         ];
 
+        if ($buyer = $this->getBuyer()) {
+            $data['buyer'] = $buyer;
+        }
 
         return $data;
     }
