@@ -46,6 +46,9 @@ class PurchaseRequest extends AbstractRequest
             'merchantPosId' => $this->getMerchantId(),
         ];
 
+        if ($buyer = $this->getBuyer()) {
+            $data['buyer'] = $buyer;
+        }
 
         return $data;
     }
