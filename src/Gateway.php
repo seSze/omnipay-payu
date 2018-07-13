@@ -2,9 +2,14 @@
 
 namespace Omnipay\PayU;
 
-use GuzzleHttp\Client;
 use Omnipay\Common\AbstractGateway;
-use Omnipay\PayU\Message\PurchaseResponse;
+use Omnipay\PayU\Exceptions\MethodNotSupportedException;
+use Omnipay\PayU\Message\CancelRequest;
+use Omnipay\PayU\Message\CompletePurchaseRequest;
+use Omnipay\PayU\Message\LoginRequest;
+use Omnipay\PayU\Message\OrderDetailsRequest;
+use Omnipay\PayU\Message\PurchaseRequest;
+use Omnipay\PayU\Message\RefundRequest;
 
 /**
  * @author    Sebastian Szczepański
@@ -12,9 +17,6 @@ use Omnipay\PayU\Message\PurchaseResponse;
  * @method \Omnipay\Common\Message\RequestInterface authorize(array $options = [])
  * @method \Omnipay\Common\Message\RequestInterface completeAuthorize(array $options = [])
  * @method \Omnipay\Common\Message\RequestInterface capture(array $options = [])
- * @method \Omnipay\Common\Message\RequestInterface purchase(array $options = [])
- * @method \Omnipay\Common\Message\RequestInterface completePurchase(array $options = [])
- * @method \Omnipay\Common\Message\RequestInterface refund(array $options = [])
  * @method \Omnipay\Common\Message\RequestInterface void(array $options = [])
  * @method \Omnipay\Common\Message\RequestInterface createCard(array $options = [])
  * @method \Omnipay\Common\Message\RequestInterface updateCard(array $options = [])
@@ -23,21 +25,19 @@ use Omnipay\PayU\Message\PurchaseResponse;
 class Gateway extends AbstractGateway
 {
     const NAME = 'PayU';
-    const PRODUCTION_ENV = 'secure';
-    const DEVELOPMENT_ENV = 'sandbox';
-    protected $client;
 
     use HasCredentials;
 
-
+    /**
+     * @return array
+     */
     public function getDefaultParameters()
     {
         return [
-            "merchantId"        => "",
-            "merchantSecret"    => "",
-            "oauthClientId"     => "",
-            "oauthClientSecret" => "",
-            
+            'merchantId'        => '',
+            'merchantSecret'    => '',
+            'oauthClientId'     => '',
+            'oauthClientSecret' => '',
         ];
     }
 
@@ -51,20 +51,6 @@ class Gateway extends AbstractGateway
         return static::NAME;
     }
 
-    public function __call($name, $arguments)
-    {
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface authorize(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface completeAuthorize(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface capture(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface purchase(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface completePurchase(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface refund(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface void(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface createCard(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface updateCard(array $options = array())
-        // TODO: Implement @method \Omnipay\Common\Message\RequestInterface deleteCard(array $options = array())
-    }
-
     /**
      * @param array $parameters
      *
@@ -72,7 +58,16 @@ class Gateway extends AbstractGateway
      */
     public function login(array $parameters = [])
     {
-        return $this->createRequest('\Omnipay\PayU\Message\LoginRequest', $parameters);
+        return $this->createRequest(LoginRequest::class, $parameters);
+    }
+
+    /**
+     * @param array $parameters
+     * @return \Omnipay\Common\Message\AbstractRequest|\Omnipay\Common\Message\RequestInterface
+     */
+    public function completePurchase(array $parameters = [])
+    {
+        return $this->guard()->createRequest(CompletePurchaseRequest::class, $parameters);
     }
 
     /**
@@ -80,36 +75,59 @@ class Gateway extends AbstractGateway
      *
      * @return \Omnipay\Common\Message\AbstractRequest
      */
-    public function capture(array $parameters = [])
+    public function purchase(array $parameters = [])
     {
-        return $this->createRequest('\Omnipay\PayU\Message\CaptureRequest', $parameters);
-    }
-
-    public function completePurchase(array $parameters = [])
-    {
-        return $this->guard()->createRequest('\Omnipay\PayU\Message\CompletePurchaseRequest', $parameters);
+        return $this->guard()->createRequest(PurchaseRequest::class, $parameters);
     }
 
     /**
      * @param array $parameters
-     *
-     * @return PurchaseResponse
+     * @return \Omnipay\Common\Message\AbstractRequest
      */
-    public function purchase(array $parameters = [])
+    public function getOrderDetails(array $parameters = [])
     {
-        return $this->guard()->createRequest('\Omnipay\PayU\Message\PurchaseRequest', $parameters);
+        return $this->guard()->createRequest(OrderDetailsRequest::class, $parameters);
     }
 
+    /**
+     * @param array $parameters
+     * @return \Omnipay\Common\Message\AbstractRequest
+     */
+    public function refund(array $parameters = [])
+    {
+        return $this->guard()->createRequest(RefundRequest::class, $parameters);
+    }
+
+    /**
+     * @param array $parameters
+     * @return \Omnipay\Common\Message\AbstractRequest
+     */
+    public function cancel(array $parameters = [])
+    {
+        return $this->guard()->createRequest(CancelRequest::class, $parameters);
+    }
+
+    /**
+     * @return Gateway $this
+     */
     public function guard()
     {
         if ($this->getParameter('accessToken')) {
             return $this;
         }
-
         $response = $this->login()->send();
-        
+
         $this->setParameter('accessToken', $response->getAccessToken());
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array  $arguments
+     */
+    public function __call(string $name, array $arguments)
+    {
+        throw new MethodNotSupportedException($name);
     }
 }

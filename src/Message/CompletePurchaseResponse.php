@@ -2,14 +2,12 @@
 
 namespace Omnipay\PayU\Message;
 
-use Omnipay\Common\Message\AbstractResponse;
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
  */
 class CompletePurchaseResponse extends AbstractResponse
 {
-    const SUCCESSFUL_STATUS = "COMPLETED";
     const PAYMENT_ID_PROPERTY_NAME = "PAYMENT_ID";
 
     /**
@@ -18,15 +16,6 @@ class CompletePurchaseResponse extends AbstractResponse
     public function getOrder()
     {
         return $this->data['orders'][0] ?? [];
-    }
-    /**
-     * Is the response successful?
-     *
-     * @return boolean
-     */
-    public function isSuccessful()
-    {
-        return $this->getOrder()['status'] == static::SUCCESSFUL_STATUS;
     }
 
     /**
@@ -42,7 +31,7 @@ class CompletePurchaseResponse extends AbstractResponse
     }
 
     /**
-     * @return mixed|string
+     * @return string
      */
     public function getExtOrderId()
     {
