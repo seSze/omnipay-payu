@@ -8,11 +8,18 @@ namespace Omnipay\PayU;
  */
 trait HasCredentials
 {
+    /**
+     * @param $accessToken
+     * @return mixed
+     */
     public function setAccessToken($accessToken)
     {
         return $this->setParameter('accessToken', $accessToken);
     }
 
+    /**
+     * @return mixed
+     */
     public function getAccessToken()
     {
         return $this->getParameter('accessToken');

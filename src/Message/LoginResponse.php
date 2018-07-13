@@ -2,7 +2,6 @@
 
 namespace Omnipay\PayU\Message;
 
-use Omnipay\Common\Message\AbstractResponse;
 /**
  * @author    Sebastian Szczepański
  * @copyright ably
@@ -16,7 +15,7 @@ class LoginResponse extends AbstractResponse
      */
     public function isSuccessful()
     {
-        return !!$this->data['access_token'];
+        return !!$this->getAccessToken();
     }
 
     /**
@@ -24,7 +23,15 @@ class LoginResponse extends AbstractResponse
      */
     public function getAccessToken(): string
     {
-        return $this->data['access_token'] ?? '';
+        return $this->getData('access_token');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenType()
+    {
+        return $this->getData('token_type');
     }
 
     /**
@@ -32,6 +39,6 @@ class LoginResponse extends AbstractResponse
      */
     public function getExpiresIn(): string
     {
-       return $this->data['expires_in'] ?? '';
+        return $this->getData('expires_in');
     }
 }
