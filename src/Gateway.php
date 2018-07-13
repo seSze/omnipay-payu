@@ -5,6 +5,10 @@ namespace Omnipay\PayU;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\PayU\Exceptions\MethodNotSupportedException;
 use Omnipay\PayU\Message\CancelRequest;
+use Omnipay\PayU\Message\CompletePurchaseRequest;
+use Omnipay\PayU\Message\LoginRequest;
+use Omnipay\PayU\Message\OrderDetailsRequest;
+use Omnipay\PayU\Message\PurchaseRequest;
 use Omnipay\PayU\Message\RefundRequest;
 
 /**
@@ -21,8 +25,6 @@ use Omnipay\PayU\Message\RefundRequest;
 class Gateway extends AbstractGateway
 {
     const NAME = 'PayU';
-    const PRODUCTION_ENV = 'secure';
-    const DEVELOPMENT_ENV = 'sandbox';
 
     use HasCredentials;
 
@@ -56,7 +58,7 @@ class Gateway extends AbstractGateway
      */
     public function login(array $parameters = [])
     {
-        return $this->createRequest('\Omnipay\PayU\Message\LoginRequest', $parameters);
+        return $this->createRequest(LoginRequest::class, $parameters);
     }
 
     /**
@@ -65,7 +67,7 @@ class Gateway extends AbstractGateway
      */
     public function completePurchase(array $parameters = [])
     {
-        return $this->guard()->createRequest('\Omnipay\PayU\Message\CompletePurchaseRequest', $parameters);
+        return $this->guard()->createRequest(CompletePurchaseRequest::class, $parameters);
     }
 
     /**
@@ -75,7 +77,7 @@ class Gateway extends AbstractGateway
      */
     public function purchase(array $parameters = [])
     {
-        return $this->guard()->createRequest('\Omnipay\PayU\Message\PurchaseRequest', $parameters);
+        return $this->guard()->createRequest(PurchaseRequest::class, $parameters);
     }
 
     /**
@@ -84,7 +86,7 @@ class Gateway extends AbstractGateway
      */
     public function getOrderDetails(array $parameters = [])
     {
-        return $this->guard()->createRequest('\Omnipay\PayU\Message\OrderDetailsRequest', $parameters);
+        return $this->guard()->createRequest(OrderDetailsRequest::class, $parameters);
     }
 
     /**
