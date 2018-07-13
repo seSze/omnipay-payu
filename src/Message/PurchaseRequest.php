@@ -2,10 +2,7 @@
 
 namespace Omnipay\PayU\Message;
 
-use Omnipay\Common\Message\AbstractRequest;
 use Omnipay\Common\Message\ResponseInterface;
-use Omnipay\PayU\Endpoint;
-use Omnipay\PayU\HasCredentials;
 
 /**
  * @author    Sebastian Szczepański
@@ -13,8 +10,6 @@ use Omnipay\PayU\HasCredentials;
  */
 class PurchaseRequest extends AbstractRequest
 {
-    use HasCredentials;
-
     /**
      * Get the raw data array for this message. The format of this varies from gateway to
      * gateway, but will usually be either an associative array, or a SimpleXMLElement.
@@ -35,16 +30,19 @@ class PurchaseRequest extends AbstractRequest
         }
 
         $data = [
-            'continueUrl'   => $this->getContinueUrl(),
+            'continueUrl'   => $this->getReturnUrl(),
             'notifyUrl'     => $this->getNotifyUrl(),
-            'totalAmount'   => $this->getIntegerAmount() ?: $this->getAmountInteger(),
+            'totalAmount'   => $this->getAmountInteger(),
             'customerIp'    => $this->getClientIp(),
-            'extOrderId'    => $this->getOrderId(),
             'description'   => $this->getDescription(),
             'currencyCode'  => $this->getCurrency(),
             'products'      => $items,
             'merchantPosId' => $this->getMerchantId(),
         ];
+
+        if ($this->getOrderId()) {
+            $data['extOrderId'] = $this->getOrderId();
+        }
 
         if ($buyer = $this->getBuyer()) {
             $data['buyer'] = $buyer;
@@ -62,45 +60,9 @@ class PurchaseRequest extends AbstractRequest
      */
     public function sendData($data)
     {
-        // Guzzle 3 does not support passing headers and response has encoding text/html
-        $accessToken = $this->getParameter('accessToken');
-        $ch          = curl_init();
+        $response = $this->request('POST', $data);
 
-        curl_setopt($ch, CURLOPT_URL, $this->getEndpoint());
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-
-        curl_setopt($ch, CURLOPT_POST, true);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            [
-                "Content-Type: application/json",
-                "Authorization: Bearer $accessToken",
-            ]
-        );
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-        $response = json_decode($response, true);
-
-        return new PurchaseResponse($this, $response);
-    }
-
-
-    /**
-     * @param bool $oauth
-     *
-     * @return string
-     */
-    public function getEndpoint(bool $oauth = false)
-    {
-        $endpoint = new Endpoint($oauth);
-
-        return $endpoint->get($this->getTestMode());
+        return new PurchaseResponse($this, json_decode($response->getBody()->getContents(), true));
     }
 
     /**
@@ -122,57 +84,19 @@ class PurchaseRequest extends AbstractRequest
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getContinueUrl()
+    public function getClientIp()
     {
-        return $this->getParameter('continueUrl');
-    }
+        $ip = parent::getClientIp();
+        if (!empty($ip)) {
+            return $ip;
+        }
+        if (function_exists('request')) {
+            return request()->getClientIp();
+        }
 
-    /**
-     * @param $url
-     *
-     * @return AbstractRequest
-     */
-    public function setContinueUrl($url)
-    {
-        return $this->setParameter('continueUrl', $url);
-    }
-
-    /**
-     * @return mixed|string
-     */
-    public function getAmount()
-    {
-        return $this->getParameter('amount');
-    }
-
-    /**
-     * @param string $amount
-     *
-     * @return AbstractRequest
-     */
-    public function setAmount($amount)
-    {
-        return $this->setParameter('amount', $amount);
-    }
-
-    /**
-     * @param $amount
-     *
-     * @return AbstractRequest
-     */
-    public function setIntegerAmount($amount)
-    {
-        return $this->setParameter('integerAmount', $amount);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIntegerAmount()
-    {
-        return $this->getParameter('integerAmount');
+        return '';
     }
 
     /**
@@ -186,15 +110,7 @@ class PurchaseRequest extends AbstractRequest
     }
 
     /**
-     * @return string
-     */
-    public function getClientIp()
-    {
-        return $this->getParameter('ip') ?: request()->getClientIp() ?? '';
-    }
-
-    /**
-     * @return mixed
+     * @return string|int
      */
     public function getOrderId()
     {

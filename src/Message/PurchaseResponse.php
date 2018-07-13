@@ -2,7 +2,6 @@
 
 namespace Omnipay\PayU\Message;
 
-use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RedirectResponseInterface;
 
 /**
@@ -11,6 +10,9 @@ use Omnipay\Common\Message\RedirectResponseInterface;
  */
 class PurchaseResponse extends AbstractResponse implements RedirectResponseInterface
 {
+    /**
+     * @return bool
+     */
     public function isRedirect()
     {
         return true;
@@ -23,7 +25,7 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
      */
     public function getRedirectUrl()
     {
-        return $this->data['redirectUri'];
+        return $this->getData('redirectUri');
     }
 
     /**
@@ -43,7 +45,7 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
      */
     public function getRedirectData()
     {
-        return $this->data;
+        return $this->getData();
     }
 
     /**
@@ -56,8 +58,33 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
         return false;
     }
 
-    public function getTransactionReference()
+    /**
+     * @return string
+     */
+    public function getOrderId()
     {
-        return $this->data['orderId'];
+        return $this->getData('orderId');
+    }
+
+    /**
+     * @return string
+     */
+    public function getExtOrderId()
+    {
+        return $this->getData('extOrderId');
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusCode()
+    {
+        $status = $this->getData('status');
+
+        if ($status) {
+            return $status['code'];
+        }
+
+        return '';
     }
 }
