@@ -10,6 +10,7 @@ use Omnipay\Common\Message\AbstractResponse;
 class CompletePurchaseResponse extends AbstractResponse
 {
     const SUCCESSFUL_STATUS = "COMPLETED";
+    const PENDING_STATUS = "PENDING";
     const PAYMENT_ID_PROPERTY_NAME = "PAYMENT_ID";
 
     /**
@@ -27,6 +28,14 @@ class CompletePurchaseResponse extends AbstractResponse
     public function isSuccessful()
     {
         return $this->getOrder()['status'] == static::SUCCESSFUL_STATUS;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPending()
+    {
+        return $this->getOrder()['status'] == static::PENDING_STATUS;
     }
 
     /**
