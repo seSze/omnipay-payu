@@ -114,6 +114,6 @@ class PurchaseRequest extends AbstractRequest
      */
     public function getOrderId()
     {
-        return $this->getParameter('orderId');
+        return $this->getParameter('orderId') ."-".str_random(10);
     }
 }

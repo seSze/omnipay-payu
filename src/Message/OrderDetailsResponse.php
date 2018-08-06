@@ -23,7 +23,9 @@ class OrderDetailsResponse extends AbstractResponse
      */
     public function getExtOrderId()
     {
-        return $this->getOrderData('extOrderId');
+        return $this->getExtOrderIdFromString(
+            $this->getOrderData('extOrderId')
+        );
     }
 
     /**
@@ -88,6 +90,11 @@ class OrderDetailsResponse extends AbstractResponse
     public function getStatus()
     {
         return $this->getOrderData('status');
+    }
+
+    public function isNew()
+    {
+        return $this->getStatus() == "NEW";
     }
 
     /**

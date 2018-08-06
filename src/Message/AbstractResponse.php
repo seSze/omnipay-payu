@@ -32,6 +32,17 @@ abstract class AbstractResponse extends BaseResponse
      */
     public function isSuccessful()
     {
-        return $this->data['status']['code'] == static::SUCCESS_STATUS_CODE;
+        return $this->data['status']['statusCode'] == static::SUCCESS_STATUS_CODE;
+    }
+
+    /**
+     * @param $string
+     * @return string
+     */
+    public function getExtOrderIdFromString(string $string)
+    {
+        $parts = explode("-", $string);
+
+        return $parts[0];
     }
 }

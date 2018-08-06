@@ -10,6 +10,11 @@ class CompletePurchaseResponse extends AbstractResponse
 {
     const PAYMENT_ID_PROPERTY_NAME = "PAYMENT_ID";
 
+    public function isNew()
+    {
+        return $this->data['orders'][0]['status'] == "NEW";
+    }
+    
     /**
      * @return array
      */
@@ -17,6 +22,7 @@ class CompletePurchaseResponse extends AbstractResponse
     {
         return $this->data['orders'][0] ?? [];
     }
+
 
     /**
      * @return string
@@ -35,7 +41,9 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getExtOrderId()
     {
-        return $this->getOrder()['extOrderId'] ?? '';
+        return $this->getExtOrderIdFromString(
+            $this->getOrder()['extOrderId'] ?? ''
+        );
     }
 
     /**
@@ -49,7 +57,7 @@ class CompletePurchaseResponse extends AbstractResponse
     /**
      * @return array
      */
-    public function getData(): array
+    public function getData(string $key = null)
     {
         return $this->data;
     }

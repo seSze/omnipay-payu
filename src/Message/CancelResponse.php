@@ -21,6 +21,8 @@ class CancelResponse extends AbstractResponse
      */
     public function getExtOrderId()
     {
-        return $this->getData('extOrderId');
+        return $this->getExtOrderIdFromString(
+            $this->getData('extOrderId')
+        );
     }
 }

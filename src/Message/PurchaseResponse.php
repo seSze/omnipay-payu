@@ -49,16 +49,6 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
     }
 
     /**
-     * Is the response successful?
-     *
-     * @return boolean
-     */
-    public function isSuccessful()
-    {
-        return false;
-    }
-
-    /**
      * @return string
      */
     public function getOrderId()
@@ -71,7 +61,9 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
      */
     public function getExtOrderId()
     {
-        return $this->getData('extOrderId');
+        return $this->getExtOrderIdFromString(
+            $this->getData('extOrderId')
+        );
     }
 
     /**
